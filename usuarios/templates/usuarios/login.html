@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center"><i class="fas fa-paw"></i> Login Veterinaria USAC</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="loginForm">
+                        {% csrf_token %}
+                        
+                        <!-- Mensajes de error -->
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Campos del formulario (sin cambios) -->
+                        <div class="mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                        </div>
+
+                        <!-- Sección biométrica (sin cambios en estructura) -->
+                        <div class="mb-3 form-check">
+                            {{ form.biometrico }}
+                            <label class="form-check-label">Usar reconocimiento facial</label>
+                        </div>
+
+                        <div id="facialSection" class="mb-3 d-none">
+                            <!-- Elementos existentes -->
+                            <div class="camera-container mb-3">
+                                <video id="video" width="100%" autoplay></video>
+                                <canvas id="canvas" style="display:none;"></canvas>
+                            </div>
+                            <button type="button" id="captureBtn" class="btn btn-secondary w-100 mb-3">
+                                <i class="fas fa-camera"></i> Capturar Rostro
+                            </button>
+                            <img id="preview" src="#" alt="Vista previa" class="img-fluid d-none">
+                            <input type="hidden" name="facial_image" id="facialInput">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Ingresar</button>
+                        
+                        <!-- Enlaces adicionales (sin cambios) -->
+                        <div class="text-center">
+                            <a href="{% url 'registro' %}" class="text-decoration-none">¿No tienes cuenta? Regístrate</a><br>
+                            <a href="{% url 'password_reset' %}" class="text-decoration-none">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script de reconocimiento facial (sin cambios en HTML, solo lógica JS) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (tu código existente de manejo de cámara)
+    
+    // Nueva función para procesamiento facial
+    const processFacialLogin = async (imageData) => {
+        try {
+            const response = await fetch('/facial-login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ image: imageData })
+            });
+            
+            const result = await response.json();
+            if (result.authenticated) {
+                window.location.href = '{% url "inicio" %}';
+            } else {
+                alert('Reconocimiento facial fallido');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Modificar el evento de captura
+    document.getElementById('captureBtn').addEventListener('click', () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = canvas.toDataURL('image/jpeg');
+        processFacialLogin(imageData.split(',')[1]);  // Envía solo el Base64
+    });
+});
+</script>
+
+<!-- Estilos existentes (sin cambios) -->
+
+.camera-container {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+}
+
+#video {
+    width: 100%;
+    height: auto;
+}
+
+#preview {
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+<style>
+.camera-container { /* ... */ }
+#video { /* ... */ }
+#preview { /* ... */ }
+</style>
+{% endblock %}

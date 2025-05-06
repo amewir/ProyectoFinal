@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body">
+                    <h5><i class="fas fa-users"></i> Usuarios</h5>
+                    <h2>{{ total_usuarios }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <h5><i class="fas fa-paw"></i> Mascotas</h5>
+                    <h2>{{ total_mascotas }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger shadow">
+                <div class="card-body">
+                    <h5><i class="fas fa-calendar-times"></i> Citas Hoy</h5>
+                    <h2>{{ citas_hoy }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning shadow">
+                <div class="card-body">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Pendientes</h5>
+                    <h2>{{ citas_pendientes }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión de usuarios -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4><i class="fas fa-user-cog"></i> Gestión de Usuarios</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Último acceso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.username }}</td>
+                        <td>{{ usuario.get_rol_display }}</td>
+                        <td>{{ usuario.last_login|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" 
+                                    data-bs-target="#modalUsuario{{ usuario.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="confirmarEliminacion('{{ usuario.username }}', '{% url 'eliminar_usuario' usuario.id %}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'registro' %}" class="btn btn-dark">
+                <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
+            </a>
+        </div>
+    </div>
+
+    <!-- Gestión de servicios -->
+    <div class="card shadow-lg">
+        <div class="card-header bg-secondary text-white">
+            <h4><i class="fas fa-tools"></i> Gestión de Servicios</h4>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for servicio in servicios %}
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="{{ servicio.imagen.url }}" class="card-img-top" alt="{{ servicio.nombre }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ servicio.nombre }}</h5>
+                            <p class="card-text">{{ servicio.descripcion|truncatechars:100 }}</p>
+                            <p class="h5">Q{{ servicio.costo }}</p>
+                            <div class="btn-group w-100">
+                                <a href="{% url 'editar_servicio' servicio.id %}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'eliminar_servicio' servicio.id %}" 
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{% url 'nuevo_servicio' %}" class="btn btn-secondary mt-3">
+                <i class="fas fa-plus-circle"></i> Agregar Servicio
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Script para confirmación de eliminación -->
+<script>
+function confirmarEliminacion(nombre, url) {
+    if(confirm(`¿Estás seguro de eliminar a ${nombre}?`)) {
+        window.location.href = url;
+    }
+}
+</script>
+{% endblock %}
