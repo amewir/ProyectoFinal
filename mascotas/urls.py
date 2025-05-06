@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import agregar_mascota
 
 urlpatterns = [
-    path('agregar/', views.agregar_mascota, name='agregar_mascota'),
+    path('agregar-mascota/', agregar_mascota, name='agregar_mascota'),
 ]

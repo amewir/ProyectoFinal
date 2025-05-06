@@ -24,77 +24,128 @@
                     <p><strong>Email:</strong> {{ user.email }}</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Teléfono:</strong> {{ user.telefono }}</p>
-                    <p><strong>DPI:</strong> {{ user.dpi }}</p>
+                    <p><strong>Teléfono:</strong> {{ user.telefono|default:"No registrado" }}</p>
+                    <p><strong>DPI:</strong> {{ user.dpi|default:"No registrado" }}</p>
                     <p><strong>Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
                 </div>
             </div>
-            <a href="{% url 'editar_perfil' %}" class="btn btn-outline-primary mt-3">
-                <i class="fas fa-edit"></i> Editar Perfil
-            </a>
+            <div class="text-center mt-4">
+                <a href="{% url 'editar_perfil' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Sección de mascotas -->
+    <!-- Sección de mascotas mejorada -->
     <div class="card shadow-lg mb-4">
         <div class="card-header bg-success text-white">
-            <h4><i class="fas fa-paw"></i> Mis Mascotas</h4>
+            <div class="d-flex justify-content-between align-items-center">
+                <h4><i class="fas fa-paw"></i> Mis Mascotas</h4>
+                <a href="{% url 'agregar_mascota' %}" class="btn btn-light">
+                    <i class="fas fa-plus"></i> Nueva Mascota
+                </a>
+            </div>
         </div>
         <div class="card-body">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% if mascotas %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {% for mascota in mascotas %}
                 <div class="col">
-                    <div class="card h-100">
-                        <img src="{{ mascota.foto.url }}" class="card-img-top" alt="{{ mascota.nombre }}">
+                    <div class="card h-100 shadow">
+                        {% if mascota.foto %}
+                        <img src="{{ mascota.foto.url }}" class="card-img-top" alt="{{ mascota.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ mascota.nombre }}</h5>
-                            <p class="card-text">
-                                <small class="text-muted">{{ mascota.especie }} - {{ mascota.raza }}</small><br>
-                                Edad: {{ mascota.edad }} años
-                            </p>
-                            <a href="{% url 'detalle_mascota' mascota.id %}" class="btn btn-sm btn-outline-success">
-                                Ver Historial
-                            </a>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Especie:</strong> {{ mascota.get_especie_display }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Raza:</strong> {{ mascota.raza }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Edad:</strong> {{ mascota.edad }} años
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Peso:</strong> {{ mascota.peso }} kg
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">Registrada el {{ mascota.fecha_registro|date:"d/m/Y" }}</small>
                         </div>
                     </div>
                 </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info">No tienes mascotas registradas</div>
-                </div>
                 {% endfor %}
             </div>
-            <a href="{% url 'agregar_mascota' %}" class="btn btn-success mt-3">
-                <i class="fas fa-plus-circle"></i> Agregar Mascota
-            </a>
+            {% else %}
+            <div class="alert alert-info text-center">
+                <h5 class="alert-heading">¡Aún no tienes mascotas registradas!</h5>
+                <p>Comienza registrando tu primera mascota</p>
+                <a href="{% url 'agregar_mascota' %}" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Registrar Mascota
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Próximas citas -->
+    <!-- Sección de citas mejorada -->
     <div class="card shadow-lg">
-        <div class="card-header bg-info text-white">
-            <h4><i class="fas fa-calendar-alt"></i> Próximas Citas</h4>
+        <div class="card-header bg-warning text-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4><i class="fas fa-calendar-alt"></i> Próximas Citas</h4>
+                <a href="{% url 'agendar_cita' %}" class="btn btn-dark">
+                    <i class="fas fa-calendar-plus"></i> Nueva Cita
+                </a>
+            </div>
         </div>
         <div class="card-body">
-            <div class="list-group">
-                {% for cita in citas %}
-                <div class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{ cita.mascota.nombre }}</h5>
-                        <small>{{ cita.fecha|date:"d M Y" }} - {{ cita.hora|time:"H:i" }}</small>
-                    </div>
-                    <p class="mb-1">{{ cita.servicio.nombre }}</p>
-                    <small>Estado: <span class="badge bg-{{ cita.estado_color }}">{{ cita.get_estado_display }}</span></small>
-                </div>
-                {% empty %}
-                <div class="list-group-item">
-                    No tienes citas programadas
-                </div>
-                {% endfor %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mascota</th>
+                            <th>Fecha</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr>
+                            <td>{{ cita.mascota.nombre }}</td>
+                            <td>{{ cita.fecha|date:"d M Y" }} - {{ cita.hora|time:"H:i" }}</td>
+                            <td>{{ cita.servicio.nombre }}</td>
+                            <td>
+                                <span class="badge bg-{{ cita.estado_color }}">
+                                    {{ cita.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="alert alert-warning mb-0">
+                                    No tienes citas programadas
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <a href="{% url 'agendar_cita' %}" class="btn btn-info mt-3">
-                <i class="fas fa-calendar-plus"></i> Agendar Nueva Cita
-            </a>
         </div>
     </div>
 </div>

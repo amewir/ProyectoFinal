@@ -20,3 +20,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+AUTH_USER_MODEL = 'usuarios.Usuario'

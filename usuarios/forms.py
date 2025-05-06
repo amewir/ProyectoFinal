@@ -1,16 +1,13 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import Usuario
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from .models import Usuario
 
 class RegistroForm(UserCreationForm):
     class Meta:
         model = Usuario
         fields = ['username', 'email', 'password1', 'password2']
-        
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Usuario'})
@@ -25,20 +22,45 @@ class LoginForm(AuthenticationForm):
     )
 
     def clean(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        password = cleaned_data.get('password')
         
-        try:
-            user = Usuario.objects.get(username=username)
-            if user.bloqueado:
-                raise ValidationError("Cuenta bloqueada. Contacta al administrador.")
+        if username and password:
+            try:
+                user = Usuario.objects.get(username=username)
                 
-            if user.intentos_fallidos >= 3:
-                user.bloqueado = True
+                if user.bloqueado:
+                    raise ValidationError("Cuenta bloqueada. Contacta al administrador.")
+                
+                if not user.check_password(password):
+                    user.intentos_fallidos += 1
+                    user.save()
+                    
+                    if user.intentos_fallidos >= 3:
+                        user.bloqueado = True
+                        user.save()
+                        raise ValidationError("Demasiados intentos fallidos. Cuenta bloqueada.")
+                    
+                    raise ValidationError("Credenciales inválidas")
+                
+                # Resetear intentos si el login es exitoso
+                user.intentos_fallidos = 0
                 user.save()
-                raise ValidationError("Demasiados intentos fallidos. Cuenta bloqueada.")
 
-        except Usuario.DoesNotExist:
-            raise ValidationError("Credenciales inválidas")
+            except Usuario.DoesNotExist:
+                raise ValidationError("Credenciales inválidas")
 
-        return super().clean()
+        return cleaned_data
+
+class EditarPerfilForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['first_name', 'last_name', 'email', 'telefono','dpi'] 
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'dpi': forms.TextInput(attrs={'class': 'form-control'}),
+        }

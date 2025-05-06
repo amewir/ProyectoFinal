@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import agendar_cita , nuevo_servicio
+from . import views
+from .views import gestion_servicios, crear_servicio, editar_servicio
 
 urlpatterns = [
-    path('agendar/', agendar_cita, name='agendar_cita'),
-    path('nuevo/', nuevo_servicio, name='nuevo_servicio'),
-
+    path('gestion/', gestion_servicios, name='gestion_servicios'),
+   path('nuevo/', crear_servicio, name='crear_servicio'),
+    path('editar/<slug:slug>/', editar_servicio, name='editar_servicio'),
 ]

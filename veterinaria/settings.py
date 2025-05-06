@@ -30,7 +30,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +44,9 @@ INSTALLED_APPS = [
     'servicios',
     'import_export',
 ]
+
+# Application definition
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -139,8 +141,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'usuarios.Usuario'
-AUTH_USER_MODEL = 'usuarios.Usuario'
+
+
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'redirect_by_role'
@@ -164,6 +166,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # Ruta relativa al proyecto
 ]
+
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 #encriptar datos
 FERNET_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode()
 ENCRYPTION_KEY = FERNET_KEY  # Usar variable de entorno en producción

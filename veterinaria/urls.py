@@ -5,9 +5,15 @@ from django.conf.urls.static import static
 from usuarios.views import inicio, custom_login  # Importación única y ordenada
 from django.urls import path
 from usuarios.views import inicio, custom_login, registro, redirect_by_role
-from usuarios.views import inicio, panel_administracion, perfil_usuario, cerrar_sesion
-from servicios.views import agendar_cita
-
+from usuarios.views import inicio, panel_administracion, perfil_usuario, cerrar_sesion, editar_perfil
+from citas.views import agendar_cita
+from mascotas.views import agregar_mascota
+from usuarios.views import (
+    agregar_mascota, 
+    agendar_cita,
+    editar_perfil,
+    detalle_cita
+)
 
 from django.urls import include
 from django.contrib.auth.views import LoginView
@@ -25,9 +31,16 @@ urlpatterns = [
     path('cuenta/', include('django.contrib.auth.urls')),
     path('usuarios/', include('usuarios.urls')),
     path('mascotas/', include('mascotas.urls')),
-    path('citas/', include('servicios.urls')),
-    path('citas/agendar/', agendar_cita, name='agendar_cita'),
+    path('citas/', include('citas.urls')),
     path('servicios/', include('servicios.urls')),
+    path('servicios/agendar/', agendar_cita, name='agendar_cita'),
+    path('usuarios/perfil/editar/', editar_perfil, name='editar_perfil'),
+    path('mascotas/agregar/', agregar_mascota, name='agregar_mascota'),
+    path('citas/agendar/', agendar_cita, name='agendar_cita'),
+    path('perfil/editar/', editar_perfil, name='editar_perfil'),
+    path('citas/<int:cita_id>/', detalle_cita, name='detalle_cita'),
+    path('admin-panel/', include('usuarios.urls')),  # URLs del panel de admin
+    path('admin-panel/servicios/', include('servicios.urls')),  # ¡Incluye las URLs de servicios aquí!
 
 ]
 

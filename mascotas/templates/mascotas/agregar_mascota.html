@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h4><i class="fas fa-plus-circle"></i> Registrar Nueva Mascota</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.nombre.label_tag }}
+                    {{ form.nombre }}
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        {{ form.especie.label_tag }}
+                        {{ form.especie }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.raza.label_tag }}
+                        {{ form.raza }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.edad.label_tag }}
+                        {{ form.edad }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.peso.label_tag }}
+                    {{ form.peso }}
+                </div>
+                <div class="mb-3">
+                    {{ form.historial_medico.label_tag }}
+                    {{ form.historial_medico }}
+                </div>
+                <div class="mb-3">
+                    {{ form.foto.label_tag }}
+                    {{ form.foto }}
+                </div>
+                <button type="submit" class="btn btn-info w-100">
+                    <i class="fas fa-save"></i> Guardar Mascota
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
