@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4><i class="fas fa-edit"></i> Editar Cita</h4>
+                <a href="{% url 'perfil_usuario' %}" class="btn btn-light">
+                    <i class="fas fa-arrow-left"></i> Volver al Perfil
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Mensajes de error generales -->
+                {% if form_cita.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form_cita.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    <!-- Columna izquierda - Datos de la cita -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">{{ form_cita.mascota.label }}</label>
+                            {{ form_cita.mascota }}
+                            {% if form_cita.mascota.errors %}
+                                <div class="text-danger mt-1">{{ form_cita.mascota.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form_cita.servicio.label }}</label>
+                            {{ form_cita.servicio }}
+                            {% if form_cita.servicio.errors %}
+                                <div class="text-danger mt-1">{{ form_cita.servicio.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha - Fecha y Hora -->
+                    <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form_cita.fecha.label }}</label>
+                                {{ form_cita.fecha }}
+                                {% if form_cita.fecha.errors %}
+                                    <div class="text-danger mt-1">{{ form_cita.fecha.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form_cita.hora.label }}</label>
+                                {{ form_cita.hora }}
+                                {% if form_cita.hora.errors %}
+                                    <div class="text-danger mt-1">{{ form_cita.hora.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form_cita.notas.label }}</label>
+                            {{ form_cita.notas }}
+                            {% if form_cita.notas.errors %}
+                                <div class="text-danger mt-1">{{ form_cita.notas.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de información de facturación (solo lectura) -->
+                <div class="border-top pt-3 mt-4">
+                    <h5 class="text-muted mb-3"><i class="fas fa-file-invoice-dollar"></i> Datos de Facturación</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre:</strong> {{ cita.nombre_facturacion }}</p>
+                            <p><strong>Apellido:</strong> {{ cita.apellido_facturacion }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>NIT/CUI:</strong> {{ cita.nit }}</p>
+                            <p><strong>Dirección:</strong> {{ cita.direccion_facturacion }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Actualizar Cita
+                    </button>
+                    <a href="{% url 'eliminar_cita' cita.id %}" 
+                       class="btn btn-danger btn-lg"
+                       onclick="return confirm('¿Estás seguro de querer cancelar esta cita?')">
+                        <i class="fas fa-trash-alt"></i> Cancelar Cita
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar datepicker y timepicker si es necesario
+    flatpickr('#id_fecha', {
+        dateFormat: "Y-m-d",
+        locale: "es",
+        minDate: "today"
+    });
+
+    flatpickr('#id_hora', {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true
+    });
+});
+</script>
+{% endblock %}

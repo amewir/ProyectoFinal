@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h4><i class="fas fa-calendar-alt"></i> Gestión de Citas</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Mascota</th>
+                            <th>Fecha</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr>
+                            <td>{{ cita.usuario.get_full_name }}</td>
+                            <td>{{ cita.mascota.nombre }}</td>
+                            <td>{{ cita.fecha|date:"d M Y" }} - {{ cita.hora|time:"H:i" }}</td>
+                            <td>{{ cita.servicio.nombre }}</td>
+                            <td>
+                                <form method="post" action="{% url 'cambiar_estado_cita' cita.id %}">
+                                    {% csrf_token %}
+                                    <select name="estado" class="form-select" onchange="this.form.submit()">
+                                        {% for value, label in cita.ESTADOS %}
+                                        <option value="{{ value }}" {% if cita.estado == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{% url 'eliminar_cita' cita.id %}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar esta cita permanentemente?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

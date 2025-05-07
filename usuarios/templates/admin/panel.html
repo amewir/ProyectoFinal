@@ -3,129 +3,250 @@
 
 {% block content %}
 <div class="container-fluid mt-4">
-    <!-- Estadísticas -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary shadow">
-                <div class="card-body">
-                    <h5><i class="fas fa-users"></i> Usuarios</h5>
-                    <h2>{{ total_usuarios }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success shadow">
-                <div class="card-body">
-                    <h5><i class="fas fa-paw"></i> Mascotas</h5>
-                    <h2>{{ total_mascotas }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger shadow">
-                <div class="card-body">
-                    <h5><i class="fas fa-calendar-times"></i> Citas Hoy</h5>
-                    <h2>{{ citas_hoy }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning shadow">
-                <div class="card-body">
-                    <h5><i class="fas fa-exclamation-triangle"></i> Pendientes</h5>
-                    <h2>{{ citas_pendientes }}</h2>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Gestión de usuarios -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-dark text-white">
-            <h4><i class="fas fa-user-cog"></i> Gestión de Usuarios</h4>
-        </div>
+  <!-- Estadísticas -->
+  <div class="row mb-4">
+    <div class="col-md-2">
+      <div class="card text-white bg-primary shadow">
         <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Rol</th>
-                        <th>Último acceso</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for usuario in usuarios %}
-                    <tr>
-                        <td>{{ usuario.username }}</td>
-                        <td>{{ usuario.get_rol_display }}</td>
-                        <td>{{ usuario.last_login|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" 
-                                    data-bs-target="#modalUsuario{{ usuario.id }}">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-sm btn-outline-warning">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-sm btn-outline-danger" 
-                                    onclick="confirmarEliminacion('{{ usuario.username }}', '{% url 'eliminar_usuario' usuario.id %}')">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a href="{% url 'registro' %}" class="btn btn-dark">
-                <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
-            </a>
+          <h5><i class="fas fa-users"></i> Usuarios</h5>
+          <h2>{{ total_usuarios }}</h2>
         </div>
+      </div>
     </div>
+    <div class="col-md-2">
+      <div class="card text-white bg-success shadow">
+        <div class="card-body">
+          <h5><i class="fas fa-paw"></i> Mascotas</h5>
+          <h2>{{ total_mascotas }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-white bg-info shadow">
+        <div class="card-body">
+          <h5><i class="fas fa-tools"></i> Servicios</h5>
+          <h2>{{ total_servicios }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow">
+        <div class="card-body">
+          <h5><i class="fas fa-calendar-day"></i> Citas Hoy</h5>
+          <h2>{{ citas_hoy }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning shadow">
+        <div class="card-body">
+          <h5><i class="fas fa-exclamation-triangle"></i> Pendientes</h5>
+          <h2>{{ citas_pendientes }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Gestión de servicios -->
-    <div class="card shadow-lg">
-        <div class="card-header bg-secondary text-white">
-            <h4><i class="fas fa-tools"></i> Gestión de Servicios</h4>
-        </div>
-        <div class="card-body">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for servicio in servicios %}
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="{{ servicio.imagen.url }}" class="card-img-top" alt="{{ servicio.nombre }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ servicio.nombre }}</h5>
-                            <p class="card-text">{{ servicio.descripcion|truncatechars:100 }}</p>
-                            <p class="h5">Q{{ servicio.costo }}</p>
-                            <div class="btn-group w-100">
-                                <a href="{% url 'editar_servicio' servicio.id %}" 
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_servicio' servicio.id %}" 
-                                   class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <a href="{% url 'crear_servicio' %}" class="btn btn-secondary mt-3">
-                <i class="fas fa-plus-circle"></i> Agregar Servicio
-            </a>
-        </div>
+  <!-- Gestión de Usuarios -->
+  <div class="card shadow-lg mb-4">
+    <div class="card-header bg-dark text-white">
+      <h4><i class="fas fa-user-cog"></i> Gestión de Usuarios</h4>
     </div>
+    <div class="card-body">
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Último acceso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.get_rol_display }}</td>
+            <td>{{ u.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</td>
+            <td>
+              <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-outline-warning">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="{% url 'eliminar_usuario' u.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Eliminar usuario {{ u.username }}?')">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">No hay usuarios registrados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{% url 'registro' %}" class="btn btn-dark">
+        <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
+      </a>
+    </div>
+  </div>
+
+  <!-- Gestión de Mascotas -->
+  <div class="card shadow-lg mb-4">
+    <div class="card-header bg-success text-white">
+      <h4><i class="fas fa-paw"></i> Gestión de Mascotas</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Especie</th>
+            <th>Dueño</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in mascotas %}
+          <tr>
+            <td>{{ m.nombre }}</td>
+            <td>{{ m.get_especie_display }}</td>
+            <td>{{ m.dueno.username }}</td>
+            <td>
+              <a href="{% url 'editar_mascota' m.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="{% url 'eliminar_mascota' m.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Eliminar mascota {{ m.nombre }}?')">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">No hay mascotas registradas.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{% url 'agregar_mascota' %}" class="btn btn-success mt-2">
+        <i class="fas fa-plus-circle"></i> Agregar Mascota
+      </a>
+    </div>
+  </div>
+
+  <!-- Gestión de Servicios -->
+  <div class="card shadow-lg mb-4">
+    <div class="card-header bg-secondary text-white">
+      <h4><i class="fas fa-tools"></i> Gestión de Servicios</h4>
+    </div>
+    <div class="card-body">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for s in servicios %}
+        <div class="col">
+          <div class="card h-100">
+            {% if s.imagen %}
+            <img src="{{ s.imagen.url }}" class="card-img-top" alt="{{ s.nombre }}">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ s.nombre }}</h5>
+              <p class="card-text">{{ s.descripcion|truncatechars:100 }}</p>
+              <p class="h5">Q{{ s.costo }}</p>
+              <div class="btn-group w-100">
+                <a href="{% url 'editar_servicio' s.slug %}" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{% url 'eliminar_servicio' s.slug %}" method="post" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="btn btn-outline-danger btn-sm"
+                          onclick="return confirm('¿Eliminar servicio {{ s.nombre }}?')">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <p>No hay servicios registrados.</p>
+        {% endfor %}
+      </div>
+      <a href="{% url 'crear_servicio' %}" class="btn btn-secondary mt-3">
+        <i class="fas fa-plus-circle"></i> Agregar Servicio
+      </a>
+    </div>
+  </div>
+
+<!-- Gestión de Citas -->
+<div class="card shadow-lg mb-4">
+    <div class="card-header bg-danger text-white">
+      <h4><i class="fas fa-calendar-check"></i> Gestión de Citas</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Mascota</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in citas %}
+          <tr>
+            <td>{{ c.mascota.nombre }}</td>
+            <td>{{ c.usuario.username }}</td>
+            <td>{{ c.fecha|date:"d/m/Y" }}</td>
+            <td>{{ c.hora|time:"H:i" }}</td>
+            <td><span class="badge bg-{{ c.estado_color }}">{{ c.get_estado_display }}</span></td>
+            <td>
+              <!-- Editar Cita Link -->
+              <a href="{% url 'editar_cita' c.id %}" class="btn btn-sm btn-outline-warning">
+                <i class="fas fa-edit"></i>
+              </a>
+              <!-- Eliminar Cita Form -->
+              <form action="{% url 'eliminar_cita' c.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Eliminar cita de {{ c.mascota.nombre }}?')">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+              <!-- Marcar Completada (si aplica) -->
+              {% if c.estado != 'completada' %}
+              <a href="{% url 'marcar_completada' c.id %}" 
+                 class="btn btn-sm btn-outline-success"
+                 onclick="return confirm('¿Marcar esta cita como completada?')">
+                <i class="fas fa-check-circle"></i>
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6">No hay citas registradas.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{% url 'agendar_cita' %}" class="btn btn-danger mt-2">
+        <i class="fas fa-plus-circle"></i> Agendar Cita
+      </a>
+    </div>
+  </div>
+
 </div>
-
-<!-- Script para confirmación de eliminación -->
-<script>
-function confirmarEliminacion(nombre, url) {
-    if(confirm(`¿Estás seguro de eliminar a ${nombre}?`)) {
-        window.location.href = url;
-    }
-}
-</script>
 {% endblock %}

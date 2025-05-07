@@ -10,65 +10,161 @@
             <form method="post" novalidate>
                 {% csrf_token %}
                 
-                <!-- Mostrar errores generales -->
-                {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- Campo Mascota -->
-                <div class="mb-3">
-                    <label class="form-label">{{ form.mascota.label }}</label>
-                    {{ form.mascota }}
-                    {% if form.mascota.errors %}
-                        <div class="text-danger mt-1">{{ form.mascota.errors }}</div>
+                <!-- Sección de la Cita -->
+                <div class="mb-4 border-bottom pb-3">
+                    <h5 class="text-muted mb-3"><i class="fas fa-paw"></i> Información de la Cita</h5>
+                    
+                    <!-- Errores Generales -->
+                    {% if form_cita.non_field_errors or form_pago.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form_cita.non_field_errors %}{{ error }}{% endfor %}
+                        {% for error in form_pago.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
                     {% endif %}
-                </div>
 
-                <!-- Fecha y Hora -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">{{ form.fecha.label }}</label>
-                        {{ form.fecha }}
-                        {% if form.fecha.errors %}
-                            <div class="text-danger mt-1">{{ form.fecha.errors }}</div>
+                    <!-- Campos de la Cita -->
+                    <div class="mb-3">
+                        <label class="form-label">{{ form_cita.mascota.label }}</label>
+                        {{ form_cita.mascota }}
+                        {% if form_cita.mascota.errors %}
+                            <div class="text-danger mt-1">{{ form_cita.mascota.errors }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">{{ form.hora.label }}</label>
-                        {{ form.hora }}
-                        {% if form.hora.errors %}
-                            <div class="text-danger mt-1">{{ form.hora.errors }}</div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_cita.fecha.label }}</label>
+                            {{ form_cita.fecha }}
+                            {% if form_cita.fecha.errors %}
+                                <div class="text-danger mt-1">{{ form_cita.fecha.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_cita.hora.label }}</label>
+                            {{ form_cita.hora }}
+                            {% if form_cita.hora.errors %}
+                                <div class="text-danger mt-1">{{ form_cita.hora.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form_cita.servicio.label }}</label>
+                        {{ form_cita.servicio }}
+                        {% if form_cita.servicio.errors %}
+                            <div class="text-danger mt-1">{{ form_cita.servicio.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form_cita.notas.label }}</label>
+                        {{ form_cita.notas }}
+                        {% if form_cita.notas.errors %}
+                            <div class="text-danger mt-1">{{ form_cita.notas.errors }}</div>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Servicio -->
-                <div class="mb-3">
-                    <label class="form-label">{{ form.servicio.label }}</label>
-                    {{ form.servicio }}
-                    {% if form.servicio.errors %}
-                        <div class="text-danger mt-1">{{ form.servicio.errors }}</div>
-                    {% endif %}
+                <!-- Sección de Facturación -->
+                <div class="mb-4 border-bottom pb-3">
+                    <h5 class="text-muted mb-3"><i class="fas fa-file-invoice-dollar"></i> Datos de Facturación</h5>
+                    
+                    <!-- Nombre y Apellido -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.nombre.label }}</label>
+                            {{ form_pago.nombre }}
+                            {% if form_pago.nombre.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.nombre.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.apellido.label }}</label>
+                            {{ form_pago.apellido }}
+                            {% if form_pago.apellido.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.apellido.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="mb-3">
+                        <label class="form-label">{{ form_pago.direccion.label }}</label>
+                        {{ form_pago.direccion }}
+                        {% if form_pago.direccion.errors %}
+                            <div class="text-danger mt-1">{{ form_pago.direccion.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Departamento y Municipio -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.departamento.label }}</label>
+                            {{ form_pago.departamento }}
+                            {% if form_pago.departamento.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.departamento.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.municipio.label }}</label>
+                            {{ form_pago.municipio }}
+                            {% if form_pago.municipio.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.municipio.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- DPI y NIT -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.dpi.label }}</label>
+                            {{ form_pago.dpi }}
+                            <small class="form-text text-muted">13 dígitos sin espacios</small>
+                            {% if form_pago.dpi.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.dpi.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form_pago.nit.label }}</label>
+                            <div class="input-group">
+                                {{ form_pago.nit }}
+                                <div class="input-group-text">
+                                    {{ form_pago.es_consumidor_final }}
+                                    <label class="form-check-label ms-2">C/F</label>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">09 dígitos o marque C/F</small>
+                            {% if form_pago.nit.errors %}
+                                <div class="text-danger mt-1">{{ form_pago.nit.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Notas -->
-                <div class="mb-3">
-                    <label class="form-label">{{ form.notas.label }}</label>
-                    {{ form.notas }}
-                    {% if form.notas.errors %}
-                        <div class="text-danger mt-1">{{ form.notas.errors }}</div>
-                    {% endif %}
-                </div>
-
+                <!-- Botón de Envío -->
                 <button type="submit" class="btn btn-success w-100 py-2">
-                    <i class="fas fa-save me-2"></i>Agendar Cita
+                    <i class="fas fa-save me-2"></i>Confirmar Cita y Pago
                 </button>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Script para Toggle NIT -->
+<script>
+function toggleNIT() {
+    const nitField = document.getElementById("{{ form_pago.nit.id_for_label }}");
+    const cfCheckbox = document.getElementById("{{ form_pago.es_consumidor_final.id_for_label }}");
+    
+    nitField.disabled = cfCheckbox.checked;
+    nitField.required = !cfCheckbox.checked;
+    if (cfCheckbox.checked) nitField.value = '';
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    toggleNIT();  // Aplicar estado inicial
+    document.getElementById("{{ form_pago.es_consumidor_final.id_for_label }}").addEventListener('change', toggleNIT);
+});
+</script>
 {% endblock %}

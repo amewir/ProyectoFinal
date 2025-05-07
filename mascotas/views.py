@@ -1,20 +1,43 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+
 from .forms import MascotaForm
-from django.contrib.auth.decorators import login_required
+from .models import Mascota
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
 
 @login_required
 def agregar_mascota(request):
     if request.method == 'POST':
         form = MascotaForm(request.POST, request.FILES)
         if form.is_valid():
-            nueva_mascota = form.save(commit=False)
-            nueva_mascota.dueno = request.user  # Asignar dueño automáticamente
-            nueva_mascota.save()
-            return redirect('lista_mascotas')  # Redirigir a la lista de mascotas
+            m = form.save(commit=False)
+            m.dueno = request.user
+            m.save()
+            return redirect('panel_administracion')
     else:
         form = MascotaForm()
-    
-    return render(request, 'mascotas/agregar_mascota.html', {
-        'form': form,
-        'titulo_pagina': 'Registrar nueva mascota'
-    })
+    return render(request, 'mascotas/agregar_mascota.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def editar_mascota(request, mascota_id):
+    mascota = get_object_or_404(Mascota, id=mascota_id)
+    form = MascotaForm(request.POST or None, request.FILES or None, instance=mascota)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Mascota actualizada')
+        return redirect('panel_administracion')
+    return render(request, 'mascotas/agregar_mascota.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def eliminar_mascota(request, mascota_id):
+    mascota = get_object_or_404(Mascota, id=mascota_id)
+    if request.method == 'POST':
+        mascota.delete()
+        messages.success(request, 'Mascota eliminada')
+        return redirect('panel_administracion')
+    return render(request, 'mascotas/confirmar_eliminacion.html', {'mascota': mascota})
