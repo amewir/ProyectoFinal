@@ -16,7 +16,10 @@ def agregar_mascota(request):
             m = form.save(commit=False)
             m.dueno = request.user
             m.save()
-            return redirect('panel_administracion')
+            # redirige según rol
+            if request.user.is_staff:
+                return redirect('panel_administracion')
+            return redirect('perfil_usuario')
     else:
         form = MascotaForm()
     return render(request, 'mascotas/agregar_mascota.html', {'form': form})
@@ -29,7 +32,9 @@ def editar_mascota(request, mascota_id):
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, 'Mascota actualizada')
-        return redirect('panel_administracion')
+        if request.user.is_staff:
+            return redirect('panel_administracion')
+        return redirect('perfil_usuario')
     return render(request, 'mascotas/agregar_mascota.html', {'form': form})
 
 @login_required
@@ -39,5 +44,7 @@ def eliminar_mascota(request, mascota_id):
     if request.method == 'POST':
         mascota.delete()
         messages.success(request, 'Mascota eliminada')
-        return redirect('panel_administracion')
+        if request.user.is_staff:
+            return redirect('panel_administracion')
+        return redirect('perfil_usuario')
     return render(request, 'mascotas/confirmar_eliminacion.html', {'mascota': mascota})

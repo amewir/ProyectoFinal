@@ -17,6 +17,14 @@ from .forms import EditarPerfilForm
 from django.contrib.auth.views import PasswordResetView
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from mascotas.views import agregar_mascota
+from django.shortcuts import render
+from .models import Usuario
+
+def lista_usuarios(request):
+    usuarios = Usuario.objects.all()  # O el queryset que necesites
+    return render(request, 'usuarios/lista_usuarios.html', {'usuarios': usuarios})
+
 def inicio(request):
     return render(request, 'inicio.html')
 

@@ -8,8 +8,13 @@ class Mascota(models.Model):
       ('ave', 'Ave'),
       ('otro','Otro'),
     )
+    GENRES = (
+      ('Macho','Macho'),
+      ('Hembra','Hembra')
+    )
     nombre           = models.CharField(max_length=100)
     especie          = models.CharField(max_length=20, choices=ESPECIES)
+    sexo         = models.CharField(max_length=20, choices=GENRES)
     raza             = models.CharField(max_length=50)
     edad             = models.PositiveIntegerField()
     peso             = models.FloatField()

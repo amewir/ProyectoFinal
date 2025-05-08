@@ -4,7 +4,7 @@ from .models import Mascota
 class MascotaForm(forms.ModelForm):
     class Meta:
         model = Mascota
-        fields = ['nombre', 'especie', 'raza', 'edad', 'peso', 'foto', 'historial_medico']
+        fields = ['nombre', 'especie', 'raza', 'edad', 'peso', 'foto','sexo','historial_medico']
         widgets = {
             'historial_medico': forms.Textarea(attrs={
                 'rows': 3,

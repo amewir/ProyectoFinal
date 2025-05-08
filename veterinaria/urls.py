@@ -6,7 +6,8 @@ from usuarios.views import editar_usuario
 from django.contrib.auth import views as auth_views
 from usuarios.forms import CustomPasswordResetForm
 from usuarios.forms import CustomSetPasswordForm
-
+from django.contrib import admin
+from django.urls import path, include
 from usuarios.views import CustomPasswordResetConfirmView
 
 from citas.views import (
@@ -36,8 +37,9 @@ from servicios.views import (
 
 urlpatterns = [
     # Admin Django
-    path('admin/', admin.site.urls),
 
+    path('admin/', admin.site.urls),
+    path('usuarios/', include('usuarios.urls')),
     # Público y Auth
     path('', inicio, name='inicio'),
     path('login/', custom_login, name='login'),
@@ -114,7 +116,7 @@ urlpatterns = [
     path('citas/completar/<int:cita_id>/', marcar_completada, name='marcar_completada'),
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
-    
+
 ]
 
 if settings.DEBUG:
