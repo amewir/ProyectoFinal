@@ -14,7 +14,9 @@ import cv2, numpy as logging
 import logging
 from django.shortcuts import render
 from .forms import EditarPerfilForm
-
+from django.contrib.auth.views import PasswordResetView
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 def inicio(request):
     return render(request, 'inicio.html')
 
@@ -36,6 +38,16 @@ from citas.models import Cita
 from servicios.models import Servicio
 
 logger = logging.getLogger(__name__)
+
+from django.contrib.auth.views import PasswordResetConfirmView
+from .forms import CustomPasswordResetForm, CustomSetPasswordForm
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    form_class = CustomSetPasswordForm
+
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff

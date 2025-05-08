@@ -3,6 +3,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from usuarios.views import editar_usuario
+from django.contrib.auth import views as auth_views
+from usuarios.forms import CustomPasswordResetForm
+from usuarios.forms import CustomSetPasswordForm
+
+from usuarios.views import CustomPasswordResetConfirmView
+
 from citas.views import (
     agendar_cita,
     historial_citas,
@@ -38,8 +44,40 @@ urlpatterns = [
     path('logout/', cerrar_sesion, name='logout'),
     path('registro/', registro, name='registro'),
     path('redirect/', redirect_by_role, name='redirect_by_role'),
-    path('cuenta/', include('django.contrib.auth.urls')),
-
+    #path('cuenta/', include('django.contrib.auth.urls')),
+    
+    
+    
+ # Sistema de recuperación de contraseña
+    path('password_reset/',
+     auth_views.PasswordResetView.as_view(
+         form_class=CustomPasswordResetForm,  # Usa tu formulario
+         template_name='password_reset/password_reset_form.html',
+         email_template_name='password_reset/password_reset_email.html',
+         subject_template_name='password_reset/password_reset_subject.txt'
+     ),
+     name='password_reset'),
+    
+    path('password_reset/done/',
+         auth_views.PasswordResetDoneView.as_view(
+             template_name='password_reset/password_reset_done.html'
+         ),
+         name='password_reset_done'),
+    
+    path(
+  'reset/<uidb64>/<token>/',
+     auth_views.PasswordResetConfirmView.as_view(
+    form_class=CustomSetPasswordForm,
+    template_name='password_reset/password_reset_confirm.html'
+  ),
+  name='password_reset_confirm'
+),
+    path('reset/done/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='password_reset/password_reset_complete.html'
+         ),
+         name='password_reset_complete'),
+    
     # Panel de administración (staff)
     path('admin-panel/', panel_administracion, name='panel_administracion'),
     path('admin-panel/usuarios/eliminar/<int:user_id>/', eliminar_usuario, name='eliminar_usuario'),
@@ -74,6 +112,9 @@ urlpatterns = [
          editar_usuario,
          name='editar_usuario'),
     path('citas/completar/<int:cita_id>/', marcar_completada, name='marcar_completada'),
+    path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+
+    
 ]
 
 if settings.DEBUG:

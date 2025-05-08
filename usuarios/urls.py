@@ -4,6 +4,7 @@ from usuarios.views import cerrar_sesion, editar_perfil
 from usuarios.views import agregar_mascota 
 from citas.views import agendar_cita
 
+
 from . import views
 urlpatterns = [
     path('registro/', registro, name='registro'),
@@ -15,5 +16,7 @@ urlpatterns = [
     path('perfil/', views.perfil_usuario, name='perfil_usuario'),
     path('agregar-mascota/', agregar_mascota, name='agregar_mascota'),
     path('agendar-cita/', agendar_cita,name='agendar_cita'),
+
+
    
 ]

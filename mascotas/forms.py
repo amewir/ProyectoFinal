@@ -17,7 +17,7 @@ class MascotaForm(forms.ModelForm):
             }),
             'peso': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'step': '0.1'
+                'min': 0
             }),
             'foto': forms.FileInput(attrs={
                 'class': 'form-control'

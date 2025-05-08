@@ -198,5 +198,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'angelhernahum@gmail.com'  # Usa variables de entorno en producción
-EMAIL_HOST_PASSWORD = 'hmzx rciu gptb argr' 
+EMAIL_HOST_USER = 'veterinariapatitas08@gmail.com'  # Usa variables de entorno en producción
+EMAIL_HOST_PASSWORD = 'cprs that lnnr stsf' 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SITE_NAME = "Veterinaria Patitas"
+DEFAULT_CHARSET = 'utf-8'
+EMAIL_USE_LOCALTIME = True
+
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'inicio'
+LOGOUT_REDIRECT_URL = 'inicio'

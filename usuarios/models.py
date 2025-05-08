@@ -16,15 +16,15 @@ class Usuario(AbstractUser):
     
     # Nuevos campos personalizados
     telefono = models.CharField(
-        max_length=20,
+        max_length=8,
         blank=True,
         null=True,
         verbose_name="Teléfono"
     )
     dpi = models.CharField(
         max_length=13,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         verbose_name="DPI"
     )
     direccion = models.TextField(
