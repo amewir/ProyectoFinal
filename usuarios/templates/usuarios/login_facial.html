@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white">
+                    <h3 class="text-center"><i class="fas fa-camera-retro"></i> Login con Reconocimiento Facial</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <p class="lead">Por favor, mire directamente a la cámara</p>
+                    </div>
+                    
+                    <div class="camera-container mb-4">
+                        <video id="video" class="w-100" autoplay></video>
+                        <canvas id="canvas" style="display:none;"></canvas>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button id="captureBtn" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-check"></i> Verificar Identidad
+                        </button>
+                    </div>
+                    
+                    <div id="loading" class="text-center mt-4 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Analizando rostro...</p>
+                    </div>
+                    
+                    <div id="errorMessage" class="alert alert-danger mt-3 d-none"></div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-key"></i> Usar contraseña
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.camera-container {
+    border: 3px solid #007bff;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+    min-height: 400px;
+}
+
+#video {
+    width: 100%;
+    height: auto;
+    transform: scaleX(-1); /* Efecto espejo */
+}
+
+#loading {
+    font-size: 1.2rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('captureBtn');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Iniciar cámara
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+        .then(stream => {
+            video.srcObject = stream;
+            captureBtn.disabled = false;
+        })
+        .catch(err => {
+            errorMessage.textContent = 'Error al acceder a la cámara: ' + err.message;
+            errorMessage.classList.remove('d-none');
+        });
+
+    // Manejar captura
+    captureBtn.addEventListener('click', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        loading.classList.remove('d-none');
+        captureBtn.disabled = true;
+        errorMessage.classList.add('d-none');
+
+        const imageData = canvas.toDataURL('image/jpeg');
+        
+        fetch("{% url 'usuarios:facial_login' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `image=${encodeURIComponent(imageData)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                errorMessage.textContent = data.error || 'Error desconocido';
+                errorMessage.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            errorMessage.textContent = 'Error de conexión';
+            errorMessage.classList.remove('d-none');
+        })
+        .finally(() => {
+            loading.classList.add('d-none');
+            captureBtn.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %}

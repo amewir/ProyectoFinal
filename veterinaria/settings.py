@@ -43,12 +43,30 @@ INSTALLED_APPS = [
     'citas',
     'servicios',
     'import_export',
+    'django_extensions',
+    'celery',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'corsheaders',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # Opcional
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Application definition
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
+# Asegúrate de tener:
+ALLOWED_HOSTS = ['*']  # Temporalmente para desarrollo
+DEBUG = True           # Debe estar en True
+
+
+CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,6 +158,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -209,3 +229,34 @@ EMAIL_USE_LOCALTIME = True
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'inicio'
 LOGOUT_REDIRECT_URL = 'inicio'
+
+
+FACIAL_RECOGNITION_SETTINGS = {
+    'MODEL_PATH': os.path.join(BASE_DIR, 'modelos/facial_model.pkl'),
+    'TRAIN_THRESHOLD': 20,  # Mínimo de muestras para entrenar
+    'MATCH_THRESHOLD': 0.4,  # Umbral de similitud
+}
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+CSP_SCRIPT_SRC = ["'self'", "https://docs.opencv.org"]
+INSTALLED_APPS += ['sslserver']
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+#celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# En settings.py (agregar)
+BIOMETRIC_CONFIG = {
+    'MIN_SAMPLES': 20,
+    'FACE_DETECTION': {
+        'scaleFactor': 1.1,
+        'minNeighbors': 5,
+        'minSize': (80, 80)
+    },
+    'RECOGNITION_THRESHOLD': 70
+}
+TF_ENABLE_ONEDNN_OPTS=0

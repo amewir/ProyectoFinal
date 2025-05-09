@@ -34,9 +34,10 @@
                         </div>
 
                         <!-- Sección biométrica (sin cambios en estructura) -->
-                        <div class="mb-3 form-check">
-                            {{ form.biometrico }}
-                            <label class="form-check-label">Usar reconocimiento facial</label>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'usuarios:facial_login'%}" class="btn btn-outline-info btn-lg">
+                                <i class="fas fa-face-recognition"></i> Usar Reconocimiento Facial
+                            </a>
                         </div>
 
                         <div id="facialSection" class="mb-3 d-none">

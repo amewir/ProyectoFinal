@@ -1,30 +1,243 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Registro de Usuario</h2>
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label">Nombre de usuario</label>
-                    {{ form.username }}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Correo electrónico</label>
-                    {{ form.email }}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Contraseña</label>
-                    {{ form.password1 }}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Confirmar contraseña</label>
-                    {{ form.password2 }}
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Registrarse</button>
-            </form>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h2 class="text-center mb-4">Registro Biométrico</h2>
+
+      <form method="post"
+            enctype="multipart/form-data"
+            id="registrationForm"
+            action="{% url 'usuarios:registro' %}">
+        {% csrf_token %}
+
+        <!-- Sección de datos básicos -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                {{ form.username  | as_crispy_field:"bootstrap5" }}
+                {{ form.email     | as_crispy_field:"bootstrap5" }}
+              </div>
+              <div class="col-md-6">
+                {{ form.password1 | as_crispy_field:"bootstrap5" }}
+                {{ form.password2 | as_crispy_field:"bootstrap5" }}
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Campo facial_data (oculto) -->
+        {{ form.facial_data | as_crispy_field:"bootstrap5" }}
+
+        <!-- Sección de captura facial en vivo -->
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <i class="bi bi-camera-video-fill me-2"></i>
+            Captura Facial en Vivo
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info">
+              <h5 class="alert-heading">Instrucciones:</h5>
+              <ul>
+                <li>Asegura buena iluminación</li>
+                <li>Mira directamente a la cámara</li>
+                <li>Debes capturar al menos 20 imágenes válidas</li>
+              </ul>
+            </div>
+            <div class="text-center">
+              <div id="cameraContainer" class="mb-3">
+                <video id="video" width="640" height="480" autoplay></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+              </div>
+              <button type="button" class="btn btn-success mb-3" id="captureButton">
+                <i class="bi bi-camera-fill me-2"></i>Capturar Rostro
+              </button>
+              <div id="previewGallery" class="row g-2"></div>
+              <div class="mt-3">
+                <span id="counter" class="badge bg-primary">Capturas: 0/20</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón de envío -->
+        <button type="submit"
+                class="btn btn-primary w-100"
+                id="submitButton"
+                disabled>
+          <i class="bi bi-person-check-fill me-2"></i>Completar Registro
+        </button>
+      </form>
     </div>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const captureButton = document.getElementById('captureButton');
+  const previewGallery = document.getElementById('previewGallery');
+  const counter = document.getElementById('counter');
+  const submitButton = document.getElementById('submitButton');
+  let captures = [];
+  let processing = false;
+
+  // Inicializa la cámara
+  async function initCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: 640, height: 480 }
+      });
+      video.srcObject = stream;
+    } catch (err) {
+      alert("Error al acceder a la cámara: " + err.message);
+    }
+  }
+
+  // Convierte dataURL a File
+  function dataURLtoFile(dataurl, filename) {
+    const [header, base64] = dataurl.split(',');
+    const mime = header.match(/:(.*?);/)[1];
+    const binary = atob(base64);
+    const arr = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      arr[i] = binary.charCodeAt(i);
+    }
+    return new File([arr], filename, { type: mime });
+  }
+
+  // Captura un frame y actualiza la galería
+  captureButton.addEventListener('click', async () => {
+    if (processing) return;
+    processing = true;
+    
+    try {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Corrección clave: Ruta absoluta del endpoint
+        const response = await fetch('/usuarios/validate-face/', {
+            method: 'POST',
+            body: dataURL,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'text/plain'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.valid) {
+            captures.push(dataURL);
+
+            // Actualizar UI
+            const col = document.createElement('div');
+            col.className = 'col-3 col-md-2';
+            col.innerHTML = `
+                <div class="position-relative">
+                    <img src="${dataURL}" 
+                         class="img-thumbnail" 
+                         style="height:80px; object-fit:cover;">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                        ✔️
+                    </span>
+                </div>
+            `;
+            previewGallery.appendChild(col);
+
+            // Actualizar contador
+            const count = captures.length;
+            counter.textContent = `Capturas: ${count}/20`;
+            counter.className = `badge ${count >= 20 ? 'bg-success' : 'bg-primary'}`;
+            submitButton.disabled = count < 20;
+        } else {
+            let errorMsg = `No se detectó un rostro válido`;
+            if (result.faces_count > 1) errorMsg = `Demasiados rostros (${result.faces_count})`;
+            if (result.face_size?.length) errorMsg += ` | Tamaño detectado: ${result.face_size[2]}x${result.face_size[3]}px`;
+            alert(errorMsg);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión: Verifica que el servidor esté activo y la URL correcta');
+    } finally {
+        processing = false;
+    }
+  });
+
+  // Envío del formulario
+  document.getElementById('registrationForm')
+    .addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const fd = new FormData(form);
+
+      captures.forEach((dataURL, i) => {
+        const file = dataURLtoFile(dataURL, `captura_${i}.jpg`);
+        fd.append('facial_data', file);
+      });
+
+      try {
+        const resp = await fetch(form.action, {
+          method: 'POST',
+          body: fd,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (resp.ok) {
+          window.location = "{% url 'usuarios:perfil_usuario' %}";
+          return;
+        }
+
+        let errorMsg;
+        try {
+          const errJson = await resp.json();
+          errorMsg = errJson.error || JSON.stringify(errJson);
+        } catch {
+          const html = await resp.text();
+          console.error('Error en registro (HTML completo):\n', html);
+          errorMsg = 'Error en el servidor. Revisa la consola para detalles.';
+        }
+        alert(errorMsg);
+      } catch (networkError) {
+        console.error('Network error:', networkError);
+        alert('Error de red. Verifica tu conexión a internet.');
+      }
+    });
+
+  initCamera();
+});
+</script>
+
+<style>
+  #cameraContainer {
+    margin: 0 auto;
+    width: fit-content;
+  }
+  #video {
+    border-radius: 8px;
+    transform: scaleX(-1);
+    background: #000;
+  }
+  #captureButton {
+    width: 200px;
+    transition: transform 0.1s;
+  }
+  #captureButton:active {
+    transform: scale(0.95);
+  }
+  input[name="facial_data"] {
+    display: none;
+  }
+</style>
 {% endblock %}

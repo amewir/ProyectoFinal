@@ -16,8 +16,51 @@ from django.core.validators import MinLengthValidator, RegexValidator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from django.forms import ClearableFileInput
+from django.core.validators import FileExtensionValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
+
+def validate_max_file_size(value):
+    max_size = 5 * 1024 * 1024  # 5MB
+    if value.size > max_size:
+        raise ValidationError(f'El archivo no puede superar los {max_size // 1024 // 1024}MB')
+
+class CustomMultipleFileInput(ClearableFileInput):
+    allow_multiple_selected = True
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('attrs', {})
+        kwargs['attrs']['multiple'] = True
+        super().__init__(*args, **kwargs)
+
+    def value_from_datadict(self, data, files, name):
+        return files.getlist(name)
+    
 
 class RegistroForm(UserCreationForm):
+    class Meta:
+        model = Usuario
+        fields = ['username', 'email', 'password1', 'password2']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['facial_data'].widget = forms.HiddenInput()
+        self.fields['facial_data'].required = False
+
+    facial_data = forms.FileField(
+        required=True,
+        label="Captura facial (mínimo 20 imágenes)",
+        widget=CustomMultipleFileInput(attrs={
+            'accept': 'image/*',
+            'capture': 'environment',
+            'class': 'file-input'
+        }),
+        validators=[
+            FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
+            validate_max_file_size  # Validador personalizado
+        ]
+    )
+    
     class Meta:
         model = Usuario
         fields = ['username', 'email', 'password1', 'password2']
@@ -161,3 +204,4 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     def form_valid(self, form):
         form.save()  # Muy importante: guarda la nueva contraseña
         return super().form_valid(form)
+    
