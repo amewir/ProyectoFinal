@@ -1,15 +1,28 @@
 from django import forms
 from .models import Empleado, Nomina, SolicitudViaje
+from django.contrib.auth.models import User
 
 class EmpleadoForm(forms.ModelForm):
+    email = forms.EmailField()
+    username = forms.CharField()
+    
     class Meta:
         model = Empleado
-        fields = ['usuario', 'puesto', 'fecha_contratacion', 'salario_base', 'departamento']
-        widgets = {
-            'fecha_contratacion': forms.DateInput(attrs={'type': 'date'}),
-            'salario_base': forms.NumberInput(attrs={'step': '0.01'}),
-        }
+        fields = ['username', 'email', 'puesto', 'departamento']  # Corrige esta lista con tus campos reales
 
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            username=self.cleaned_data['username'],
+            email=self.cleaned_data['email'],
+            password='temp_password'
+        )
+        empleado = super().save(commit=False)
+        empleado.usuario = user
+        if commit:
+            empleado.save()
+        return empleado
+
+    
 class NominaForm(forms.ModelForm):
     class Meta:
         model = Nomina
@@ -42,3 +55,7 @@ class SolicitudViajeForm(forms.ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
             'presupuesto': forms.NumberInput(attrs={'step': '0.01'}),
         }
+
+    empleado = forms.ModelChoiceField(queryset=Empleado.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+
+

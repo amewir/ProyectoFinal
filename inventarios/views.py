@@ -17,12 +17,17 @@ def gestion_medicamentos(request):
     medicamentos = Medicamento.objects.all().order_by('nombre')
     stock_bajo = Medicamento.objects.filter(stock__lt=10)
     
-    return render(request, 'admin/gestion_medicamentos.html', {
+    return render(request, 'inventarios/gestion_medicamentos.html', {
         'medicamentos': medicamentos,
         'stock_bajo': stock_bajo,
         'total_medicamentos': medicamentos.count()
     })
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def lista_medicamentos(request):
+    medicamentos = Medicamento.objects.all()
+    return render(request, 'inventarios/lista_medicamentos.html', {'medicamentos': medicamentos})
 
 from django.core.paginator import Paginator
 

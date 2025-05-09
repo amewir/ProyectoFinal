@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Lista de Medicamentos</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Lote</th>
+                <th>Stock</th>
+                <th>Fecha Caducidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicamento in medicamentos %}
+            <tr>
+                <td>{{ medicamento.nombre }}</td>
+                <td>{{ medicamento.lote }}</td>
+                <td>{{ medicamento.stock }}</td>
+                <td>{{ medicamento.fecha_caducidad }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No hay medicamentos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

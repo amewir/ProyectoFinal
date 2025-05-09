@@ -5,7 +5,7 @@ from django.contrib import messages
 from usuarios.models import Usuario
 from .models import Empleado, Nomina, SolicitudViaje
 from .forms import EmpleadoForm, NominaForm, SolicitudViajeForm
-
+from .forms import EmpleadoForm, NominaForm
 # Función de verificación de administrador
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -110,3 +110,29 @@ def aprobar_viaje(request, viaje_id):
     viaje.save()
     messages.success(request, 'Viaje aprobado exitosamente')
     return redirect('recursos_humanos:gestion_viajes')
+
+@login_required
+@user_passes_test(is_admin)
+def nuevo_viaje(request):
+    if request.method == 'POST':
+        form = SolicitudViajeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('recursos_humanos:gestion_viajes')
+    else:
+        form = SolicitudViajeForm()
+    return render(request, 'recursos_humanos/form_viaje.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def nueva_nomina(request):
+    if request.method == 'POST':
+        form = NominaForm(request.POST)
+        if form.is_valid():
+            nomina = form.save(commit=False)
+            nomina.salario_neto = nomina.calcular_salario_neto()
+            nomina.save()
+            return redirect('recursos_humanos:gestion_nominas')
+    else:
+        form = NominaForm()
+    return render(request, 'recursos_humanos/form_nomina.html', {'form': form})

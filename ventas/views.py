@@ -84,3 +84,11 @@ def exportar_facturas(request):
     response['Content-Disposition'] = 'attachment; filename="facturas_veterinaria.xlsx"'
     
     return response
+
+from django.shortcuts import get_object_or_404
+from .models import Factura
+
+def detalle_factura(request, factura_id):
+    factura = get_object_or_404(Factura, pk=factura_id)
+    return render(request, 'ventas/detalle_factura.html', {'factura': factura})
+

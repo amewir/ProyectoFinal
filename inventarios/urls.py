@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import gestion_medicamentos, movimientos_inventario, alertas_inventario
 from .views import gestion_medicamentos, crear_medicamento, actualizar_stock
-
+from . import views
 app_name = 'inventarios'
 
 urlpatterns = [
@@ -10,5 +10,7 @@ urlpatterns = [
     path('alertas/', alertas_inventario, name='alertas_inventario'),
     path('medicamentos/nuevo/', crear_medicamento, name='crear_medicamento'),
     path('medicamentos/stock/<int:medicamento_id>/', actualizar_stock, name='actualizar_stock'),
-    
+    path('medicamentos/lista/', views.lista_medicamentos, name='lista_medicamentos'),
+    path('alertas/', views.alertas_inventario, name='alertas_inventario'),
+
 ]
