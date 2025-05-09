@@ -5,11 +5,20 @@ from django.contrib import messages
 from usuarios.models import Usuario
 from .models import Empleado, Nomina, SolicitudViaje
 from .forms import EmpleadoForm, NominaForm, SolicitudViajeForm
-from .forms import EmpleadoForm, NominaForm
+from .forms import EmpleadoForm, NominaForm , EmpleadoCreacionForm
 # Función de verificación de administrador
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model
+
+from .models import Empleado
+from .forms import UsuarioForm, EmpleadoForm
+
+User = get_user_model()
+
 def is_admin(user):
     return user.is_authenticated and user.is_staff
-
 # ---------------------------------------------------
 # Gestión de Empleados
 # ---------------------------------------------------
@@ -21,36 +30,43 @@ def gestion_empleados(request):
         'empleados': empleados,
         'roles': Empleado.PUESTOS_CHOICES
     })
-
 @login_required
 @user_passes_test(is_admin)
 def crear_empleado(request):
     if request.method == 'POST':
-        form = EmpleadoForm(request.POST)
+        form = EmpleadoCreacionForm(request.POST)
+        usuario_form = UsuarioForm(request.POST)
+
         if form.is_valid():
             form.save()
-            messages.success(request, 'Empleado creado exitosamente')
             return redirect('recursos_humanos:gestion_empleados')
     else:
-        form = EmpleadoForm()
-    
-    return render(request, 'admin/form_empleado.html', {'form': form})
+        form = EmpleadoCreacionForm()
+        usuario_form = UsuarioForm()
 
+    return render(request, 'recursos_humanos/crear_empleado.html', {
+        'form_empleado': form,
+    })
 @login_required
 @user_passes_test(is_admin)
 def editar_empleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
-    if request.method == 'POST':
-        form = EmpleadoForm(request.POST, instance=empleado)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Empleado actualizado')
-            return redirect('recursos_humanos:gestion_empleados')
-    else:
-        form = EmpleadoForm(instance=empleado)
-    
-    return render(request, 'admin/form_empleado.html', {'form': form})
+    usuario_form = UsuarioForm(request.POST or None, instance=empleado.usuario)
+    empleado_form = EmpleadoForm(request.POST or None, instance=empleado)
 
+    if request.method == 'POST':
+        if usuario_form.is_valid() and empleado_form.is_valid():
+            usuario_form.save()
+            empleado_form.save()
+            return redirect('recursos_humanos:gestion_empleados')  # Redirige a la lista de empleados después de guardar
+
+    return render(request, 'recursos_humanos/editar_empleado.html', {
+        'empleado': empleado,
+        'form_usuario': usuario_form,
+        'form_empleado': empleado_form,
+    })
+    
+        
 @login_required
 @user_passes_test(is_admin)
 def eliminar_empleado(request, empleado_id):

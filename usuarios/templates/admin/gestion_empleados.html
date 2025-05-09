@@ -27,15 +27,15 @@
               <td>Q{{ empleado.salario_base }}</td>
               <td>{{ empleado.departamento }}</td>
               <td>
-                <a href="#" class="btn btn-sm btn-outline-warning">
-                  <i class="fas fa-edit"></i>
-                </a>
-                <form action="#" method="post" class="d-inline">
-                  {% csrf_token %}
+            <a href="{% url 'recursos_humanos:editar_empleado' empleado.id %}" class="btn btn-sm btn-outline-warning">
+               <i class="fas fa-edit"></i>
+            </a>
+              <form action="{% url 'recursos_humanos:eliminar_empleado' empleado.id %}" method="post" class="d-inline">
+                {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fas fa-trash-alt"></i>
+                  <i class="fas fa-trash-alt"></i>
                   </button>
-                </form>
+              </form>
               </td>
             </tr>
             {% empty %}
@@ -44,9 +44,12 @@
           </tbody>
         </table>
       </div>
-      <a href="#" class="btn btn-dark mt-3">
-        <i class="fas fa-user-plus"></i> Nuevo Empleado
-      </a>
+
+
+      
+      <a href="{% url 'recursos_humanos:crear_empleado' %}" class="btn btn-dark mt-3">
+      <i class="fas fa-user-plus"></i> Nuevo Empleado
+    </a>
     </div>
   </div>
 </div>

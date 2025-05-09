@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from ventas.models import Factura
 from servicios.models import Servicio
 from datetime import datetime, timedelta
+from django.shortcuts import get_object_or_404, redirect
+from ventas.models import Factura
+
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -29,7 +32,7 @@ def reporte_ventas(request):
     ventas_mensuales = (
         Factura.objects
         .filter(fecha_emision__gte=fecha_limite)
-        .extra({'month': "date_trunc('month', fecha_emision)"})
+        .extra({'month': "date_trunc('month', fecha_emision)"} )
         .values('month')
         .annotate(total=Sum('total'))
         .order_by('month')
@@ -37,7 +40,7 @@ def reporte_ventas(request):
     
     # Preparar datos para gráficos
     meses = [v['month'].strftime("%b %Y") for v in ventas_mensuales]
-    montos = [float(v['total'] or 0 for v in ventas_mensuales)]
+    montos = [float(v['total'] or 0) for v in ventas_mensuales]  # Solucionado
     
     servicios_labels = [s.nombre for s in ventas_por_servicio]
     servicios_data = [float(s.total_ventas or 0) for s in ventas_por_servicio]
@@ -53,7 +56,6 @@ def reporte_ventas(request):
     }
     
     return render(request, 'admin/reporte_ventas.html', context)
-
 
 
 @login_required
@@ -92,3 +94,16 @@ def detalle_factura(request, factura_id):
     factura = get_object_or_404(Factura, pk=factura_id)
     return render(request, 'ventas/detalle_factura.html', {'factura': factura})
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def ver_factura(request, id):
+    factura = get_object_or_404(Factura, pk=id)
+    return render(request, 'ventas/ver_factura.html', {'factura': factura})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def marcar_factura_pagada(request, id):
+    factura = get_object_or_404(Factura, pk=id)
+    factura.pagado = True
+    factura.save()
+    return redirect('ventas:gestion_facturas') 

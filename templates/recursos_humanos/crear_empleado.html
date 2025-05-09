@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-warning text-white">
+      <h4><i class="fas fa-user-plus"></i> Crear Nuevo Empleado</h4>
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Formulario para Empleado -->
+        <h5>Datos de Empleado</h5>
+        <div class="row">
+          {% for field in form_empleado %}
+            <div class="col-md-6 mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger">
+                  {% for error in field.errors %}
+                    <small>{{ error }}</small>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <a href="{% url 'recursos_humanos:gestion_empleados' %}" class="btn btn-secondary">
+          Cancelar
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

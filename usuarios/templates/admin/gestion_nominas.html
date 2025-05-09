@@ -27,12 +27,12 @@
               <td>Q{{ nomina.salario_neto }}</td>
               <td><span class="badge bg-success">Pagado</span></td>
               <td>
-                <a href="#" class="btn btn-sm btn-outline-info">
-                  <i class="fas fa-print"></i>
+                <a href="{% url 'recursos_humanos:imprimir_nomina' nomina.id %}" class="btn btn-sm btn-outline-info">
+                <i class="fas fa-print"></i>
                 </a>
-                <a href="#" class="btn btn-sm btn-outline-danger">
-                  <i class="fas fa-trash-alt"></i>
-                </a>
+            <a href="{% url 'recursos_humanos:eliminar_nomina' nomina.id %}" class="btn btn-sm btn-outline-danger">
+              <i class="fas fa-trash-alt"></i>
+            </a>
               </td>
             </tr>
             {% empty %}
@@ -41,7 +41,7 @@
           </tbody>
         </table>
       </div>
-      <a href="#" class="btn btn-success mt-3">
+      <a href="{% url 'recursos_humanos:generar_nomina' %}" class="btn btn-success mt-3">
         <i class="fas fa-plus-circle"></i> Generar Nómina
       </a>
     </div>

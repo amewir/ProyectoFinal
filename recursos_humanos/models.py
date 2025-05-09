@@ -31,22 +31,6 @@ class Empleado(models.Model):
     def __str__(self):
         return f"{self.usuario.get_full_name()} - {self.get_puesto_display()}"
 
-class Nomina(models.Model):
-    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
-    fecha = models.DateField(auto_now_add=True)
-    horas_extras = models.IntegerField(default=0)
-    bonos = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    deducciones = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    salario_neto = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def calcular_salario_neto(self):
-        return (
-            self.empleado.salario_base +
-            (self.horas_extras * 100) +
-            self.bonos -
-            self.deducciones
-        )
-
 class SolicitudViaje(models.Model):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     destino = models.CharField(max_length=200)
@@ -71,7 +55,7 @@ class Nomina(models.Model):
     def calcular_salario_neto(self):
         return (
             self.empleado.salario_base +
-            (self.horas_extras * 100) +  # Suponiendo Q100 por hora extra
+            (self.horas_extras * 100) +
             self.bonos -
             self.deducciones
         )
