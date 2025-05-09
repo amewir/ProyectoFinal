@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
+from ventas.models import Factura
 
 from .forms import CitaForm, SimulacionPagoForm
 from .models import Cita
@@ -43,12 +44,17 @@ def agendar_cita(request):
             cita.dpi = form_pago.cleaned_data['dpi']
             cita.nit = 'CF' if form_pago.cleaned_data['es_consumidor_final'] else form_pago.cleaned_data['nit']
             cita.save()
+
+            # Crear la factura
+            Factura.objects.create(cita=cita, total=cita.servicio.costo)
+
             send_confirmation_email(request.user, cita)
             messages.success(request, '¡Cita agendada y pago simulado exitosamente!')
             return redirect('perfil_usuario')
     else:
         form_cita = CitaForm(request.user)
         form_pago = SimulacionPagoForm()
+
     return render(request, 'citas/agendar_cita.html', {
         'form_cita': form_cita,
         'form_pago': form_pago

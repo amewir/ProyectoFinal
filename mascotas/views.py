@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-
 from .forms import MascotaForm
 from .models import Mascota
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
+
+@login_required
+def perfil_usuario(request):
+    return render(request, 'mascotas/perfil_usuario.html')
 
 @login_required
 def agregar_mascota(request):

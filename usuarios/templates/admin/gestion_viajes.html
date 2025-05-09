@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-info text-white">
+      <h4><i class="fas fa-plane-departure"></i> Gestión de Solicitudes de Viaje</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Empleado</th>
+              <th>Destino</th>
+              <th>Fechas</th>
+              <th>Presupuesto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for viaje in viajes %}
+            <tr>
+              <td>{{ viaje.empleado.usuario.get_full_name }}</td>
+              <td>{{ viaje.destino }}</td>
+              <td>
+                {{ viaje.fecha_inicio|date:"d/m/Y" }}<br>
+                <i class="fas fa-arrow-right"></i><br>
+                {{ viaje.fecha_fin|date:"d/m/Y" }}
+              </td>
+              <td>Q{{ viaje.gastos }}</td>
+              <td>
+                {% if viaje.aprobado %}
+                <span class="badge bg-success">Aprobado</span>
+                {% else %}
+                <span class="badge bg-warning">Pendiente</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'recursos_humanos:editar_viaje' viaje.id %}" 
+                   class="btn btn-sm btn-outline-primary">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{% url 'recursos_humanos:eliminar_viaje' viaje.id %}" 
+                      method="post" 
+                      class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" 
+                          class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('¿Eliminar solicitud para {{ viaje.destino }}?')">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+                {% if not viaje.aprobado %}
+                <a href="{% url 'recursos_humanos:aprobar_viaje' viaje.id %}" 
+                   class="btn btn-sm btn-outline-success">
+                  <i class="fas fa-check-circle"></i>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No hay solicitudes de viaje registradas</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{% url 'recursos_humanos:nuevo_viaje' %}" class="btn btn-info mt-3">
+        <i class="fas fa-plus-circle"></i> Nueva Solicitud
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

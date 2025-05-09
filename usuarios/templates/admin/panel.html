@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-fluid mt-4">
 
-  <!-- Estadísticas -->
+  <!-- Estadísticas mejoradas con nuevos módulos -->
   <div class="row mb-4">
     <div class="col-md-2">
       <div class="card text-white bg-primary shadow">
@@ -25,12 +25,20 @@
     <div class="col-md-2">
       <div class="card text-white bg-info shadow">
         <div class="card-body">
-          <h5><i class="fas fa-tools"></i> Servicios</h5>
-          <h2>{{ total_servicios }}</h2>
+          <h5><i class="fas fa-chart-line"></i> Ventas</h5>
+          <h2>Q{{ total_ventas|default:0 }}</h2>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
+      <div class="card text-white bg-secondary shadow">
+        <div class="card-body">
+          <h5><i class="fas fa-boxes"></i> Inventario</h5>
+          <h2>{{ total_inventario|default:0 }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
       <div class="card text-white bg-danger shadow">
         <div class="card-body">
           <h5><i class="fas fa-calendar-day"></i> Citas Hoy</h5>
@@ -38,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="card text-white bg-warning shadow">
         <div class="card-body">
           <h5><i class="fas fa-exclamation-triangle"></i> Pendientes</h5>
@@ -48,6 +56,76 @@
     </div>
   </div>
 
+  <!-- Nuevos módulos de gestión -->
+  <div class="row">
+    
+    <!-- Módulo Recursos Humanos -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-lg h-100">
+        <div class="card-header bg-dark text-white">
+          <h4><i class="fas fa-user-tie"></i> Recursos Humanos</h4>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="{% url 'recursos_humanos:gestion_empleados' %}" class="btn btn-outline-dark mb-2">
+              <i class="fas fa-users-cog"></i> Gestionar Empleados
+            </a>
+            <a href="{% url 'recursos_humanos:gestion_nominas' %}" class="btn btn-outline-success mb-2">
+              <i class="fas fa-file-invoice-dollar"></i> Nóminas
+            </a>
+            <a href="{% url 'recursos_humanos:gestion_viajes' %}" class="btn btn-outline-info mb-2">
+              <i class="fas fa-plane"></i> Solicitudes de Viaje
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo Ventas -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-lg h-100">
+        <div class="card-header bg-success text-white">
+          <h4><i class="fas fa-cash-register"></i> Ventas</h4>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="{% url 'ventas:gestion_facturas' %}" class="btn btn-outline-success mb-2">
+              <i class="fas fa-receipt"></i> Facturas ({{ facturas_pendientes }})
+            </a>
+            <a href="{% url 'ventas:exportar_facturas' %}" class="btn btn-outline-primary mb-2">
+              <i class="fas fa-file-excel"></i> Exportar a Excel
+            </a>
+            <a href="{% url 'ventas:reporte_ventas' %}" class="btn btn-outline-warning mb-2">
+              <i class="fas fa-chart-pie"></i> Reportes
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Módulo Inventarios -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-lg h-100">
+        <div class="card-header bg-info text-white">
+          <h4><i class="fas fa-warehouse"></i> Inventarios</h4>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="{% url 'inventarios:gestion_medicamentos' %}" class="btn btn-outline-info mb-2">
+              <i class="fas fa-pills"></i> Medicamentos ({{ stock_bajo }})
+            </a>
+            <a href="{% url 'inventarios:movimientos_inventario' %}" class="btn btn-outline-secondary mb-2">
+              <i class="fas fa-exchange-alt"></i> Movimientos
+            </a>
+            <a href="{% url 'inventarios:alertas_inventario' %}" class="btn btn-outline-danger mb-2">
+              <i class="fas fa-bell"></i> Alertas
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <!-- Gestión de Usuarios -->
   <div class="card shadow-lg mb-4">
     <div class="card-header bg-dark text-white">
@@ -75,10 +153,10 @@
             <td>{{ u.get_rol_display }}</td>
             <td>{{ u.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</td>
             <td>
-              <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-outline-warning">
+              <a href="{% url 'usuarios:editar_usuario' u.id %}" class="btn btn-sm btn-outline-warning">
                 <i class="fas fa-edit"></i>
               </a>
-              <form action="{% url 'eliminar_usuario' u.id %}" method="post" class="d-inline">
+              <form action="{% url 'usuarios:eliminar_usuario' u.id %}" method="post" class="d-inline">
                 {% csrf_token %}
                 <button type="submit"
                         class="btn btn-sm btn-outline-danger"
@@ -93,7 +171,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <a href="{% url 'registro' %}" class="btn btn-dark">
+      <a href="{% url 'usuarios:registro' %}" class="btn btn-dark">
         <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
       </a>
     </div>
@@ -121,10 +199,10 @@
             <td>{{ m.get_especie_display }}</td>
             <td>{{ m.dueno.username }}</td>
             <td>
-              <a href="{% url 'editar_mascota' m.id %}" class="btn btn-sm btn-outline-primary">
+              <a href="{% url 'mascotas:editar_mascota' m.id %}" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-edit"></i>
               </a>
-              <form action="{% url 'eliminar_mascota' m.id %}" method="post" class="d-inline">
+              <form action="{% url 'mascotas:eliminar_mascota' m.id %}" method="post" class="d-inline">
                 {% csrf_token %}
                 <button type="submit"
                         class="btn btn-sm btn-outline-danger"
@@ -139,7 +217,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <a href="{% url 'agregar_mascota' %}" class="btn btn-success mt-2">
+      <a href="{% url 'mascotas:agregar_mascota' %}" class="btn btn-success mt-2">
         <i class="fas fa-plus-circle"></i> Agregar Mascota
       </a>
     </div>
@@ -163,10 +241,10 @@
               <p class="card-text">{{ s.descripcion|truncatechars:100 }}</p>
               <p class="h5">Q{{ s.costo }}</p>
               <div class="btn-group w-100">
-                <a href="{% url 'editar_servicio' s.slug %}" class="btn btn-outline-primary btn-sm">
+                <a href="{% url 'servicios:editar_servicio' s.slug %}" class="btn btn-outline-primary btn-sm">
                   <i class="fas fa-edit"></i>
                 </a>
-                <form action="{% url 'eliminar_servicio' s.slug %}" method="post" class="d-inline">
+                <form action="{% url 'servicios:eliminar_servicio' s.slug %}" method="post" class="d-inline">
                   {% csrf_token %}
                   <button type="submit"
                           class="btn btn-outline-danger btn-sm"
@@ -182,7 +260,7 @@
         <p>No hay servicios registrados.</p>
         {% endfor %}
       </div>
-      <a href="{% url 'crear_servicio' %}" class="btn btn-secondary mt-3">
+      <a href="{% url 'servicios:crear_servicio' %}" class="btn btn-secondary mt-3">
         <i class="fas fa-plus-circle"></i> Agregar Servicio
       </a>
     </div>
@@ -215,11 +293,11 @@
             <td><span class="badge bg-{{ c.estado_color }}">{{ c.get_estado_display }}</span></td>
             <td>
               <!-- Editar Cita Link -->
-              <a href="{% url 'editar_cita' c.id %}" class="btn btn-sm btn-outline-warning">
+              <a href="{% url 'citas:editar_cita' c.id %}" class="btn btn-sm btn-outline-warning">
                 <i class="fas fa-edit"></i>
               </a>
               <!-- Eliminar Cita Form -->
-              <form action="{% url 'eliminar_cita' c.id %}" method="post" class="d-inline">
+              <form action="{% url 'citas:eliminar_cita' c.id %}" method="post" class="d-inline">
                 {% csrf_token %}
                 <button type="submit"
                         class="btn btn-sm btn-outline-danger"
@@ -229,7 +307,7 @@
               </form>
               <!-- Marcar Completada (si aplica) -->
               {% if c.estado != 'completada' %}
-              <a href="{% url 'marcar_completada' c.id %}" 
+              <a href="{% url 'citas:marcar_completada' c.id %}" 
                  class="btn btn-sm btn-outline-success"
                  onclick="return confirm('¿Marcar esta cita como completada?')">
                 <i class="fas fa-check-circle"></i>
@@ -242,7 +320,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <a href="{% url 'agendar_cita' %}" class="btn btn-danger mt-2">
+      <a href="{% url 'citas:agendar_cita' %}" class="btn btn-danger mt-2">
         <i class="fas fa-plus-circle"></i> Agendar Cita
       </a>
     </div>

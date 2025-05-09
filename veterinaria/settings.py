@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'corsheaders',
+    'ventas',
+    'recursos_humanos',
+    'inventarios',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # Opcional

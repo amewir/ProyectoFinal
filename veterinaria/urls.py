@@ -39,9 +39,8 @@ urlpatterns = [
     # Admin Django
     path('admin/', admin.site.urls),
     
-    # URLs de usuarios
-    path('usuarios/', include('usuarios.urls')),
-    
+    # URLs de usuarios    
+    path('usuarios/', include('usuarios.urls')), 
     # Auth y páginas públicas
     path('', inicio, name='inicio'),
     path('login/', custom_login, name='login'),
@@ -101,6 +100,20 @@ urlpatterns = [
     path('citas/editar/<int:cita_id>/', editar_cita, name='editar_cita'),
     path('citas/eliminar/<int:cita_id>/', eliminar_cita, name='eliminar_cita'),
     path('citas/completar/<int:cita_id>/', marcar_completada, name='marcar_completada'),
+    
+    #modulos
+    path('rh/', include('recursos_humanos.urls')),
+    path('rh/', include(('recursos_humanos.urls', 'recursos_humanos'), namespace='recursos_humanos')),
+    path('ventas/', include(('ventas.urls', 'ventas'), namespace='ventas')),
+    path('mascotas/', include(('mascotas.urls', 'mascotas'), namespace='mascotas')),
+    path('servicios/', include(('servicios.urls', 'servicios'), namespace='servicios')),
+    path('citas/', include(('citas.urls', 'citas'), namespace='citas')),
+    path('inventarios/', include(('inventarios.urls', 'inventarios'), namespace='inventarios')),
+
+
+
+    
+    
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

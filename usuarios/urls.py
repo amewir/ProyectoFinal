@@ -8,6 +8,7 @@ from mascotas.views import agregar_mascota
 from .views import facial_login
 from . import views
 from .views import validate_face
+
 app_name = 'usuarios'
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path('admin-panel/usuarios/editar/<int:user_id>/', editar_usuario, name='editar_usuario'),
     path('usuarios/', lista_usuarios, name='lista_usuarios'),
     path('validate-face/', validate_face, name='validate_face'),
+    path('eliminar/<int:user_id>/', views.eliminar_usuario, name='eliminar_usuario'),
 ]

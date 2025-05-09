@@ -176,7 +176,10 @@ def registro(request):
         'min_imagenes': 20,
     })
 
-
+@login_required
+def perfil_usuario(request):
+    # lógica para mostrar perfil
+    return render(request, 'usuarios/perfil.html')
 
 def facial_login(request):
     if request.method == 'POST':
@@ -223,6 +226,8 @@ def facial_login(request):
             return JsonResponse({'error': 'Error de servidor'}, status=500)
             
     return render(request, 'usuarios/login_facial.html')
+
+
 # Vistas de administración
 @login_required
 @user_passes_test(is_admin)
