@@ -8,6 +8,7 @@ from mascotas.views import agregar_mascota
 from .views import facial_login
 from . import views
 from .views import validate_face
+from django.contrib.auth import views as auth_views
 
 app_name = 'usuarios'
 
@@ -24,4 +25,6 @@ urlpatterns = [
     path('usuarios/', lista_usuarios, name='lista_usuarios'),
     path('validate-face/', validate_face, name='validate_face'),
     path('eliminar/<int:user_id>/', views.eliminar_usuario, name='eliminar_usuario'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
 ]
