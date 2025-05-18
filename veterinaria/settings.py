@@ -60,7 +60,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
 # Asegúrate de tener:
-ALLOWED_HOSTS = ['*']  # Temporalmente para desarrollo
+ALLOWED_HOSTS = ['184.73.83.42','35.172.133.81','localhost']  # Temporalmente para desarrollo
 DEBUG = True           # Debe estar en True
 
 
@@ -109,7 +109,7 @@ DATABASES = {
         'NAME': 'veterinaria_db',      # Nombre exacto de tu BD
         'USER': 'postgres',            # Usuario de PostgreSQL
         'PASSWORD': 'whatsapp',   # Contraseña de db
-        'HOST': 'localhost',         #no esta en remoto
+        'HOST': 'db',         #no esta en remoto
         'PORT': '5432',                # Puerto por defecto 
     }
 }
