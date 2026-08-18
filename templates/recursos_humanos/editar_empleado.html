@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-warning text-white">
+      <h4><i class="fas fa-user-edit"></i> Editar Empleado: {{ empleado.usuario.username }}</h4>
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Datos de Usuario -->
+        <h5>Datos de Usuario</h5>
+        <div class="row">
+<div class="col-md-6 mb-3">
+  <label for="id_username">Nombre de usuario</label>
+  <input type="text" class="form-control" value="{{ empleado.usuario.username }}" readonly>
+</div>
+
+          <div class="col-md-6 mb-3">
+            {{ form_usuario.email.label_tag }}
+            {{ form_usuario.email }}
+            {% if form_usuario.email.errors %}
+              <div class="text-danger">
+                {% for error in form_usuario.email.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form_usuario.first_name.label_tag }}
+            {{ form_usuario.first_name }}
+            {% if form_usuario.first_name.errors %}
+              <div class="text-danger">
+                {% for error in form_usuario.first_name.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form_usuario.last_name.label_tag }}
+            {{ form_usuario.last_name }}
+            {% if form_usuario.last_name.errors %}
+              <div class="text-danger">
+                {% for error in form_usuario.last_name.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Datos de Empleado -->
+        <h5 class="mt-4">Datos de Empleado</h5>
+        <div class="row">
+          {% for field in form_empleado %}
+            <div class="col-md-6 mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger">
+                  {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Guardar Cambios
+        </button>
+        <a href="{% url 'recursos_humanos:gestion_empleados' %}" class="btn btn-secondary">
+          Cancelar
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

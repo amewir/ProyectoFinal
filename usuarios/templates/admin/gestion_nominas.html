@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-success text-white">
+      <h4><i class="fas fa-file-invoice-dollar"></i> Gestión de Nóminas</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Empleado</th>
+              <th>Periodo</th>
+              <th>Salario Neto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for nomina in nominas %}
+            <tr>
+              <td>{{ nomina.empleado.usuario.username }}</td>
+              <td>{{ nomina.fecha|date:"F Y" }}</td>
+              <td>Q{{ nomina.salario_neto }}</td>
+              <td><span class="badge bg-success">Pagado</span></td>
+              <td>
+                <a href="{% url 'recursos_humanos:imprimir_nomina' nomina.id %}" class="btn btn-sm btn-outline-info">
+                <i class="fas fa-print"></i>
+                </a>
+            <a href="{% url 'recursos_humanos:eliminar_nomina' nomina.id %}" class="btn btn-sm btn-outline-danger">
+              <i class="fas fa-trash-alt"></i>
+            </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hay nóminas registradas</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{% url 'recursos_humanos:generar_nomina' %}" class="btn btn-success mt-3">
+        <i class="fas fa-plus-circle"></i> Generar Nómina
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

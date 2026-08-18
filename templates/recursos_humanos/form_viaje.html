@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Registrar Nuevo Viaje</h2>
+{% load custom_filters %}
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="{{ form.empleado.id_for_label }}">Empleado</label>
+                {{ form.empleado|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="{{ form.destino.id_for_label }}">Destino</label>
+                {{ form.destino|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="{{ form.fecha_inicio.id_for_label }}">Fecha de Inicio</label>
+                {{ form.fecha_inicio|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="{{ form.fecha_fin.id_for_label }}">Fecha de Fin</label>
+                {{ form.fecha_fin|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.motivo.id_for_label }}">Motivo del Viaje</label>
+            {{ form.motivo|add_class:"form-control" }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.presupuesto.id_for_label }}">Presupuesto</label>
+            {{ form.presupuesto|add_class:"form-control" }}
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Registrar Viaje</button>
+        </div>
+    </form>
+
+    <div class="form-group">
+        <a href="{% url 'recursos_humanos:gestion_viajes' %}" class="btn btn-secondary btn-lg btn-block">Cancelar</a>
+    </div>
+</div>
+{% endblock %}

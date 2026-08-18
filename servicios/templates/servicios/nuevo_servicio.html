@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-plus-circle"></i> {{ titulo }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.nombre.label_tag }}
+                            {{ form.nombre }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.costo.label_tag }}
+                            {{ form.costo }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.duracion_estimada.label_tag }}
+                            {{ form.duracion_estimada }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.descripcion.label_tag }}
+                            {{ form.descripcion }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.imagen.label_tag }}
+                            {{ form.imagen }}
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ form.disponible }}
+                            <label class="form-check-label" for="{{ form.disponible.id_for_label }}">
+                                Disponible
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-save"></i> Guardar Servicio
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

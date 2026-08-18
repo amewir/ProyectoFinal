@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2>Detalles de la Factura</h2>
+    
+    <table class="table">
+      <tr>
+        <th>ID de la Factura:</th>
+        <td>{{ factura.id }}</td>
+      </tr>
+      <tr>
+        <th>Fecha de Emisión:</th>
+        <td>{{ factura.fecha_emision|date:"d/m/Y" }}</td>
+      </tr>
+      <tr>
+        <th>Total:</th>
+        <td>Q{{ factura.total }}</td>
+      </tr>
+      <tr>
+        <th>Estado:</th>
+        <td>
+          {% if factura.pagado %}
+            <span class="badge bg-success">Pagado</span>
+          {% else %}
+            <span class="badge bg-danger">Pendiente</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Cliente:</th>
+        <td>{{ factura.cita.usuario.nombre }}</td>
+      </tr>
+      <tr>
+        <th>Mascota:</th>
+        <td>{{ factura.cita.mascota.nombre }}</td>
+      </tr>
+    </table>
+    
+    {% if not factura.pagado %}
+      <form action="{% url 'ventas:marcar_factura_pagada' factura.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Marcar como Pagada</button>
+      </form>
+    {% endif %}
+
+    <a href="{% url 'ventas:gestion_facturas' %}" class="btn btn-secondary">Volver a la lista de facturas</a>
+  </div>
+{% endblock %}

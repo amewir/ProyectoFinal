@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container-fluid bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4">Bienvenido a Veterinaria Patitas</h1>
+        <p class="lead">Cuidamos a tus mascotas como si fueran nuestras</p>
+        <a href="{% url 'registro' %}" class="btn btn-light btn-lg">Regístrate</a>
+    </div>
+</div>
+
+<!-- Servicios Destacados -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">Nuestros Servicios</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="{% static 'img/consulta.jpg' %}" class="card-img-top" alt="Consulta">
+                <div class="card-body">
+                    <h5 class="card-title">Consultas Generales</h5>
+                    <p class="card-text">Revisiones completas y diagnósticos precisos.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="{% static 'img/vacunacion.jpg' %}" class="card-img-top" alt="Vacunación">
+                <div class="card-body">
+                    <h5 class="card-title">Vacunación</h5>
+                    <p class="card-text">Protege a tu mascota de enfermedades.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="{% static 'img/cirugia.jpg' %}" class="card-img-top" alt="Cirugía">
+                <div class="card-body">
+                    <h5 class="card-title">Cirugías</h5>
+                    <p class="card-text">Intervenciones con tecnología de última generación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p>&copy; 2025 Veterinaria Patitas. Todos los derechos reservados.</p>
+    </div>
+</footer>
+{% endblock %}

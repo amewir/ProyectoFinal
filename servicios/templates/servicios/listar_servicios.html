@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4"><i class="fas fa-concierge-bell"></i> Nuestros Servicios</h2>
+            
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for servicio in servicios %}
+                <div class="col">
+                    <div class="card h-100 shadow">
+                        {% if servicio.imagen %}
+                        <img src="{{ servicio.imagen.url }}" class="card-img-top" alt="{{ servicio.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ servicio.nombre }}</h5>
+                            <p class="card-text">{{ servicio.descripcion }}</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Duración:</strong> {{ servicio.duracion_estimada }} minutos
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Costo:</strong> Q{{ servicio.costo }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Estado:</strong> 
+                                    <span class="badge bg-{% if servicio.disponible %}success{% else %}danger{% endif %}">
+                                        {{ servicio.disponible|yesno:"Disponible,No disponible" }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
